@@ -1,8 +1,9 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using static System.Math;
+using CSharpForFinancialMarkets;
 
-namespace UnitTestProject1
+namespace CSharpForFinancialMarkets.Chapter2
 {
     public struct Point
     {
@@ -78,7 +79,7 @@ namespace UnitTestProject1
     }
 
     [TestClass]
-    public class Chaper2
+    public class Chaper2Tests
     {
         [TestMethod]
         public void ZeroCouponBond()
@@ -110,7 +111,7 @@ namespace UnitTestProject1
         }
 
         [TestMethod]
-        public void TestMethod1()
+        public void NormalDistributionTest()
         {
             Assert.AreEqual(SpecialFunctions.N(0), 0.5, 0.001);
         }

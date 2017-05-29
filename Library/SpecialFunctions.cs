@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UnitTestProject1
+namespace CSharpForFinancialMarkets
 {
     public static class SpecialFunctions
     {

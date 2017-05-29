@@ -1,4 +1,4 @@
-﻿namespace UnitTestProject1
+﻿namespace CSharpForFinancialMarkets
 {
     public enum OptionType
     {
