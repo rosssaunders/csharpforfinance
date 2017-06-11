@@ -7,18 +7,18 @@ namespace CSharpForFinancialMarkets
         /// <summary>
         /// Swap Tenor
         /// </summary>
-        public double t { get; set; }     // Volatility
+        public double Tenor { get; set; } 
 
         /// <summary>
         /// Number of compounding per year in the swap rate
         /// </summary>
-        public double m { get; set; }       // Strike price
+        public double CompoundingPeriodsPerYear { get; set; }
 
         public Swaption(OptionType optionType, double expiry, double strike, double interest, double volatility, double swapTenor, double numberOfCompoundsPerYear) : base(optionType, expiry, strike, 0, interest, volatility)
         {
             // Create Swaption instance
-            t = swapTenor;
-            m = numberOfCompoundsPerYear;
+            Tenor = swapTenor;
+            CompoundingPeriodsPerYear = numberOfCompoundsPerYear;
         }
 
         private double Alpha(double f, double m, double t)
@@ -29,7 +29,7 @@ namespace CSharpForFinancialMarkets
         protected override double CallPrice(double U)
         {
             var blackPrice = base.CallPrice(U);
-            var alpha = Alpha(U, m, t);
+            var alpha = Alpha(U, CompoundingPeriodsPerYear, Tenor);
 
             return alpha * blackPrice;
         }
@@ -37,7 +37,7 @@ namespace CSharpForFinancialMarkets
         protected override double PutPrice(double U)
         {
             var blackPrice = base.PutPrice(U);
-            var alpha = Alpha(U, m, t);
+            var alpha = Alpha(U, CompoundingPeriodsPerYear, Tenor);
 
             return alpha * blackPrice;
         }
