@@ -6,9 +6,10 @@ namespace Library.Data
 {
     public class Vector<T> : Array<T>
     {
-        private static BinaryOperatorT<T, T, T> addTT;
-        private static BinaryOperatorT<T, T, T> subTT;
-        private static BinaryOperatorT<T, T, T> mulTT;
+        public static BinaryOperatorT<T, T, T> addTT;
+        public static BinaryOperatorT<T, T, T> subTT;
+        public static BinaryOperatorT<T, T, T> mulTT;
+        public static BinaryOperatorT<T, T, T> divTT;
 
         //Constructor with start-index is 1 and length is 15
         public Vector() : base()
@@ -59,7 +60,7 @@ namespace Library.Data
 
             if (addTT == null)
             {
-                //addTT = new BinaryOperatorT<T, T, T>(GenericOperatorFactory<T, T, T, Vector<T>>.Add);
+                addTT = new BinaryOperatorT<T, T, T>(GenericOperatorFactory<T, T, T, Vector<T>>.Add);
             }
 
             for (int i = v1.MinIndex; i <= v1.MaxIndex; i++)
@@ -77,7 +78,7 @@ namespace Library.Data
 
             if (mulTT == null)
             {
-                //mulTT = new BinaryOperatorT<T, T, T>(GenericOperatorFactory<T, T, T, Vector<T>>.Multiply);
+                mulTT = new BinaryOperatorT<T, T, T>(GenericOperatorFactory<T, T, T, Vector<T>>.Multiply);
             }
 
             for (int i = v1.MinIndex; i <= v1.MaxIndex; i++)
@@ -96,7 +97,7 @@ namespace Library.Data
 
             if (subTT == null)
             {
-                //subTT = new BinaryOperatorT<T, T, T>(GenericOperatorFactory<T, T, T, Vector<T>>.Subtract);
+                subTT = new BinaryOperatorT<T, T, T>(GenericOperatorFactory<T, T, T, Vector<T>>.Subtract);
             }
 
             for (int i = v1.MinIndex; i <= v1.MaxIndex; i++)
@@ -113,7 +114,7 @@ namespace Library.Data
 
             if (addTT == null)
             {
-                //addTT = new BinaryOperatorT<T, T, T>(GenericOperatorFactory<T, T, T, Vector<T>>.Add);
+                addTT = new BinaryOperatorT<T, T, T>(GenericOperatorFactory<T, T, T, Vector<T>>.Add);
             }
 
             for (int i = v1.MinIndex; i <= v1.MaxIndex; i++)
@@ -136,7 +137,7 @@ namespace Library.Data
 
             if (subTT == null)
             {
-                //subTT = new BinaryOperatorT<T, T, T>(GenericOperatorFactory<T, T, T, Vector<T>>.Subtract);
+                subTT = new BinaryOperatorT<T, T, T>(GenericOperatorFactory<T, T, T, Vector<T>>.Subtract);
             }
 
             for (int i = v1.MinIndex; i <= v1.MaxIndex; i++)
@@ -153,7 +154,7 @@ namespace Library.Data
 
             if (subTT == null)
             {
-                //subTT = new BinaryOperatorT<T, T, T>(GenericOperatorFactory<T, T, T, Vector<T>>.Subtract);
+                subTT = new BinaryOperatorT<T, T, T>(GenericOperatorFactory<T, T, T, Vector<T>>.Subtract);
             }
 
             for (int i = v1.MinIndex; i <= v1.MaxIndex; i++)
@@ -170,7 +171,7 @@ namespace Library.Data
 
             if (mulTT == null)
             {
-                //mulTT = new BinaryOperatorT<T, T, T>(GenericOperatorFactory<T, T, T, Vector<T>>.Multiply);
+                mulTT = new BinaryOperatorT<T, T, T>(GenericOperatorFactory<T, T, T, Vector<T>>.Multiply);
             }
 
             for (int i = v1.MinIndex; i <= v1.MaxIndex; i++)

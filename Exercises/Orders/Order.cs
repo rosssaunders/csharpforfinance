@@ -66,6 +66,9 @@ namespace CSharpForFinancialMarkets.Orders
         {
             get
             {
+                if (m_items == null)
+                    m_items = new List<OrderItem>();
+
                 return m_items;
             }
         }

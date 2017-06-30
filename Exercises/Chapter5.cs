@@ -13,6 +13,10 @@ namespace Homework
         [TestMethod]
         public void E5_15_1()
         {
+            dynamic x = 5;
+            x = new Order();
+
+            
             /*
                 See the Order Item code in the Order folder
                 

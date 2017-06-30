@@ -14,6 +14,10 @@ namespace Homework
         void Reset();
     }
 
+    /// <summary>
+    /// FIFO
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class Queue<T> where T : IResettable
     {
         private List<T> items;
@@ -151,22 +155,44 @@ namespace Homework
 
         public static T SumOfSquares<T>(this Vector<T> vector)
         {
-            return default(T);
+            T accumulator = default(T);
+            for(var i = vector.MinIndex; i < vector.MaxIndex; i++)
+            {
+                accumulator = Vector<T>.addTT(accumulator, Vector<T>.mulTT(vector[i], vector[i]));
+            }
+
+            return accumulator;
         }
 
         public static T Sum<T>(this Vector<T> vector)
         {
-            return default(T);
+            T accumulator = default(T);
+            for (var i = vector.MinIndex; i < vector.MaxIndex; i++)
+            {
+                accumulator = Vector<T>.addTT(accumulator, vector[i]);
+            }
+
+            return accumulator;
         }
 
         public static T SumOfReciprocals<T>(this Vector<T> vector)
         {
-            return default(T);
+            var div = GenericOperatorFactory<int, T, T, T>.Divide;
+
+            T accumulator = default(T);
+            for (var i = vector.MinIndex; i < vector.MaxIndex; i++)
+            {
+                accumulator = Vector<T>.addTT(accumulator, div(1, vector[i]));
+            }
+
+            return accumulator;
         }
 
         public static T ArithmetricMean<T>(this Vector<T> vector)
         {
-            return default(T);
+            var div = GenericOperatorFactory<T, int, T, T>.Divide;
+
+            return div(Sum(vector), vector.Length);
         }
 
         public static T GeometricMean<T>(this Vector<T> vector)
