@@ -89,6 +89,12 @@ namespace Library.Bonds
             double numerator = 1.0 - (1.0 / Math.Pow(factor, nPeriods));
             return (A * numerator) / Interest;
         }
+
+        public double FutureValueContinuous(double P0)
+        {
+            double growthFactor = Math.Exp(r * nPeriods);
+            return P0 * growthFactor;
+        }
     }
 
     public class Bond

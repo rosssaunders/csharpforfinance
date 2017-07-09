@@ -9,3 +9,7 @@ namespace Library.Polyfill
         object Clone();
     }
 }
+
+namespace System
+{
+}
