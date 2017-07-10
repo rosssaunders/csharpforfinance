@@ -45,8 +45,8 @@ namespace Library.Data
 
             if (addTT == null)
             {
-                //addTT = GenericOperatorFactory<T, T, T, Vector<T>>.Add;
-                //  addTT = new BinaryOperatorT<T, T, T>(GenericOperatorFactory<T, T, T, Vector<T>>.Add);
+                addTT = GenericOperatorFactory<T, T, T, Vector<T>>.Add;
+                //addTT = new BinaryOperatorT<T, T, T>(GenericOperatorFactory<T, T, T, Vector<T>>.Add);
             }
 
             for (i = m1.MinColumnIndex; i <= m1.MaxColumnIndex; i++)
@@ -65,7 +65,7 @@ namespace Library.Data
 
             if (subTT == null)
             {
-                //subTT = GenericOperatorFactory<T, T, T, Vector<T>>.Subtract;
+                subTT = GenericOperatorFactory<T, T, T, Vector<T>>.Subtract;
             }
 
             for (i = m1.MinColumnIndex; i <= m1.MaxColumnIndex; i++)
@@ -87,12 +87,12 @@ namespace Library.Data
 
             if (mulTT == null)
             {
-                //mulTT = GenericOperatorFactory<T, T, T, Vector<T>>.Multiply;
+                mulTT = GenericOperatorFactory<T, T, T, Vector<T>>.Multiply;
             }
 
             if (addTT == null)
             {
-                //addTT = GenericOperatorFactory<T, T, T, Vector<T>>.Add;
+                addTT = GenericOperatorFactory<T, T, T, Vector<T>>.Add;
             }
 
             /*  OLD int i, j, k, l;
@@ -131,12 +131,12 @@ namespace Library.Data
         {
             if (mulTT == null)
             {
-                //mulTT = GenericOperatorFactory<T, T, T, Vector<T>>.Multiply;
+                mulTT = GenericOperatorFactory<T, T, T, Vector<T>>.Multiply;
             }
 
             if (addTT == null)
             {
-                //addTT = GenericOperatorFactory<T, T, T, Vector<T>>.Add;
+                addTT = GenericOperatorFactory<T, T, T, Vector<T>>.Add;
             }
 
             Vector<T> result = new Vector<T>(m.Rows);
@@ -165,7 +165,7 @@ namespace Library.Data
 
             if (mulTT == null)
             {
-                //mulTT = GenericOperatorFactory<T, T, T, Vector<T>>.Multiply;
+                mulTT = GenericOperatorFactory<T, T, T, Vector<T>>.Multiply;
             }
 
             for (i = m.MinRowIndex; i <= m.MaxRowIndex; i++)

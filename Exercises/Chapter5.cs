@@ -68,18 +68,20 @@ namespace Homework
                 Note: ApplicationException does NOT exist in .net core.
              */
 
-            var order = new Order();
-            order.Name = "Order 1";
+            var order = new Order()
+            {
+                Name = "Order 1"
+            };
 
             try
             {
                 order.AddItem(new OrderItem());
             }
-            catch(NoNameException ex)
+            catch(NoNameException)
             {
                 Debug.Write("Correct exception type caught");
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 throw;
             }

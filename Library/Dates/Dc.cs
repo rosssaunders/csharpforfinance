@@ -27,6 +27,7 @@
 
 namespace System
 {
+
     public enum Dc
     {
         // many can be added

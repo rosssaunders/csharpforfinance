@@ -141,7 +141,7 @@ namespace Library.Data
         }
         #endregion
 
-        #region Generic multiplication for type T
+        #region Generic Division for type T
         //Multiplication
         public static BinaryOperatorT<TLeft, TRight, TResult> Divide
         {

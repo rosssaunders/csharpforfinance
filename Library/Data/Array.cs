@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using Library.Polyfill;
-using System;
-using System.Text;
 
 namespace Library.Data
 {
-
     public class Array<T> // : IVectorIndexer<T>
     {
         // Class variables
