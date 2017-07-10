@@ -25,6 +25,8 @@
 // 2) test the following spreadsheet:
 // http: // www.isda.org/c_and_a/docs/30-360-2006ISDADefs.xls
 
+using Library.Data;
+
 namespace System
 {
     // ----------------------------------------------------------------------
