@@ -130,7 +130,7 @@ namespace CSharpForFinancialMarkets
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private (double d1, double d2, double tmp) D(double U)
+        protected (double d1, double d2, double tmp) D(double U)
         {
             var tmp = sig * Sqrt(T);
             var d1 = (Log(U / K) + (b + (sig * sig) * 0.5) * T) / tmp;
@@ -300,7 +300,7 @@ namespace CSharpForFinancialMarkets
         /// <returns>The value of Vomma</returns>
         private double CallVomma(double U)
         {
-            var (d1, d2, tmp) = D(U);
+            var (d1, d2, _) = D(U);
 
             return CallVega(d1 * d2 / sig);
         }

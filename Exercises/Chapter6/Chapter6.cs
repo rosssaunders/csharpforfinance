@@ -9,65 +9,11 @@ using System.Text;
 
 namespace Homework
 {
-    public interface IResettable
-    {
-        void Reset();
-    }
-
-    /// <summary>
-    /// FIFO
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class Queue<T> where T : IResettable
-    {
-        private List<T> items;
-
-        public Queue()
-        {
-            items = new List<T>();
-        }
-
-        public void Enqueue(T item)
-        {
-            //Add to the end of the list
-            items.Add(item);
-        }
-
-        public T Dequeue()
-        {
-            if (items.Count > 0)
-            {
-                var item = items[0];
-                items.RemoveAt(0);
-                return item;
-            }
-
-            throw new QueueEmptyException("No items are in the queue");
-        }
-
-        public void Reset()
-        {
-            foreach (var item in items)
-                item.Reset();
-        }
-    }
-
-    public class QueueEmptyException : Exception
-    {
-        public QueueEmptyException(string message) : base(message) { }
-    }
-
-    public class Account : IResettable
-    {
-        public void Reset() { }
-    }
-
-
     [TestClass]
-    class Chapter6Tests
+    public class Chapter6Tests
     {
         [TestMethod]
-        public void E6_12_1()
+        public void C6_12_1()
         {
             /*
                 Generic Queue.
@@ -83,7 +29,7 @@ namespace Homework
         }
 
         [TestMethod]
-        public void E5_15_2()
+        public void C6_12_2()
         {
             /*
                 Generic Methods
@@ -112,7 +58,7 @@ namespace Homework
         }
 
         [TestMethod]
-        public void E5_15_3()
+        public void C6_12_3()
         {
             /*
                 The question is asking for pros and cons of the following implementations:
@@ -125,21 +71,17 @@ namespace Homework
         }
 
         [TestMethod]
-        public void E5_15_4_5()
+        public void C6_12_4_5()
         {
             /*
                 Implementation of stats methods. I've combined Ex 4 & 5 and have implemented them straight as extension methods
             
                 See below 
              */
-
-                        
         }
 
-        
-
         [TestMethod]
-        public void E5_15_4_6()
+        public void C6_12_6()
         {
             /*
                 Performance of the Matrix class vs raw arrays            
