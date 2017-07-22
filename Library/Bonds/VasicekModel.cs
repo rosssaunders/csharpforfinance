@@ -30,6 +30,11 @@ namespace Library
             return (1.0 - Exp(-kappa * (s - t))) / kappa;
         }
 
+        public VasicekModel() : base(0,0,0,0)
+        {
+
+        }
+
         public VasicekModel(double kappa, double theta, double vol, double r) : base(kappa, theta, vol, r)
         {
             longTermYield = theta - 0.5 * vol * vol / (kappa * kappa);

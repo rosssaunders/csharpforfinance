@@ -63,7 +63,7 @@ namespace Homework
     }
 
 
-
+    [TestClass]
     class Chapter6Tests
     {
         [TestMethod]

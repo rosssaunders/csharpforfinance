@@ -33,6 +33,11 @@ namespace Library
             return (tmp1 - 1.0) / (phi2 * (tmp1 - 1.0) + phi1);
         }
 
+        public CIRModel() : base(0,0,0,0)
+        {
+
+        }
+
         public CIRModel(double kappa, double theta, double vol, double r)
             : base(kappa, theta, vol, r)
         {

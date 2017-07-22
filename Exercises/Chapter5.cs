@@ -8,6 +8,7 @@ using System.Text;
 
 namespace Homework
 {
+    [TestClass]
     class Chapter5Tests
     {
         [TestMethod]
