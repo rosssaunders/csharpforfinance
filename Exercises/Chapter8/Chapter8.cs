@@ -286,7 +286,7 @@ namespace CSharpForFinancialMarkets
                                     typeof(DualStrikeStrategy),
                                     typeof(OutPerformanceStrategy),
                                     typeof(BestofTwoStrategy),
-                                    typeof(WorstofTwoStrategy),
+                                    typeof(WorstOfTwoStrategy),
                                     typeof(PortfolioStrategy)
                                 });
 
@@ -303,7 +303,7 @@ namespace CSharpForFinancialMarkets
                     new DualStrikeStrategy(50, 60, 10, 02),
                     new OutPerformanceStrategy(10, 20, 30, 50),
                     new BestofTwoStrategy(),
-                    new WorstofTwoStrategy(),
+                    new WorstOfTwoStrategy(),
                     new PortfolioStrategy()
                 };
                 

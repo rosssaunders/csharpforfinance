@@ -5,7 +5,7 @@ namespace CSharpForFinancialMarkets
     /// <summary>
     /// Best of 2 options
     /// </summary>
-    public class WorstofTwoStrategy : MultiAssetPayoffStrategy
+    public class WorstOfTwoStrategy : MultiAssetPayoffStrategy
     {
         /// <summary>
         /// Strike
@@ -15,25 +15,25 @@ namespace CSharpForFinancialMarkets
         /// <summary>
         /// +1 call, -1 put
         /// </summary>
-        public int w { get; set; }         
+        public int W { get; set; }         
 
         // All public classes need default ructor
-        public WorstofTwoStrategy()
+        public WorstOfTwoStrategy()
         {
             K = 95.0;
-            w = +1;
+            W = +1;
         }
 
-        public WorstofTwoStrategy(double strike, int cp)
+        public WorstOfTwoStrategy(double strike, int cp)
         {
             K = strike;
-            w = cp;
+            W = cp;
         }
 
         public override double Payoff(double S1, double S2)
         {
-            double min = Math.Min(S1, S2);
-            return Math.Max(w * (min - K), 0.0);
+            var min = Math.Min(S1, S2);
+            return Math.Max(W * (min - K), 0.0);
         }
     }
 }
