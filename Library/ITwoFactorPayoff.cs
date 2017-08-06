@@ -1,4 +1,4 @@
-namespace CSharpForFinancialMarkets
+namespace Library
 {
     public interface ITwoFactorPayoff
     { 

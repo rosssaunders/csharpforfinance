@@ -1,4 +1,5 @@
 using System;
+using Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CSharpForFinancialMarkets.Chapter3

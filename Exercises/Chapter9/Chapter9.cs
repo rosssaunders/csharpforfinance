@@ -5,168 +5,21 @@ using System.IO;
 using System.Text;
 using Library.Binominal;
 using Library.Data;
+using Library.Excel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CSharpForFinancialMarkets.Chapter9
 {
-    public interface IOptionFactory
-    {
-        Library.Binominal.Option create();
-    }
-
-    public class ConsoleEuropeanOptionFactory : IOptionFactory
-    {
-        public Library.Binominal.Option create()
-        {
-            Console.Write("\n*** Parameters for option object ***\n");
-
-            var opt = new Library.Binominal.Option();
-
-            Console.Write("Strike: ");
-            opt.K = Convert.ToDouble(Console.ReadLine());
-
-            Console.Write("Volatility: ");
-            opt.sig = Convert.ToDouble(Console.ReadLine());
-
-            Console.Write("Interest rate: ");
-            opt.r = Convert.ToDouble(Console.ReadLine());
-
-
-            Console.Write("Expiry date: ");
-            opt.T = Convert.ToDouble(Console.ReadLine());
-
-            Console.Write("1. Call, 2. Put: ");
-            opt.type = Convert.ToInt32(Console.ReadLine());
-
-            return opt;
-        }
-    }
-
     [TestClass]
     public class Chapter9
     {
-        static IOptionFactory getFactory()
+        private Library.Binominal.Option _testOption;
+        private int numberOfSteps = 50;
+
+        [TestInitialize]
+        public void Initialize()
         {
-            return new ConsoleEuropeanOptionFactory();
-
-            // Later, other factory types
-        }
-
-        public static BinomialLatticeStrategy getStrategy(double sig, double r, double k,
-            double S, double K, int N)
-        {
-            Console.WriteLine(
-                "\n1. CRR, 2. JR, 3. TRG, 4. EQP, 5. Modified CRR:\n6. Cayley JR Transform: 7 Cayley CRR:");
-
-            int choice;
-            choice = Convert.ToInt32(Console.ReadLine());
-
-            if (choice == 1)
-                return new CRRStrategy(sig, r, k);
-
-            if (choice == 2)
-                return new JRStrategy(sig, r, k);
-
-            if (choice == 3)
-                return new TRGStrategy(sig, r, k);
-
-            if (choice == 4)
-                return new EQPStrategy(sig, r, k);
-
-            if (choice == 5)
-                return new ModCRRStrategy(sig, r, k, S, K, N);
-
-            if (choice == 6)
-                return new PadeJRStrategy(sig, r, k);
-
-            if (choice == 7)
-                return new PadeCRRStrategy(sig, r, k);
-
-
-            return new CRRStrategy(sig, r, k);
-        }
-
-        public void TestStrategies()
-        {
-            // Phase I: Create and initialise the option
-            IOptionFactory fac = getFactory();
-
-            int N = 200;
-            Console.Write("Number of time steps: ");
-            N = Convert.ToInt32(Console.ReadLine());
-
-            double S;
-            Console.Write("Underlying price: ");
-            S = Convert.ToDouble(Console.ReadLine());
-
-            Library.Binominal.Option opt = fac.create();
-
-            double k = opt.T / N;
-
-            // Create basic lattice
-            double discounting = Math.Exp(-opt.r * k);
-
-            // Phase II: Create the binomial method and forward induction
-            BinomialLatticeStrategy binParams = getStrategy(opt.sig, opt.r, k, S, opt.K, N); // Factory
-            BinomialMethod bn = new BinomialMethod(discounting, binParams, N);
-
-            bn.modifyLattice(S);
-
-            // Phase III: Backward Induction and compute option price
-            Vector<double> RHS = new Vector<double>(bn.BasePyramidVector());
-            if (binParams.BinomialType == BinomialType.Additive)
-            {
-                RHS[RHS.MinIndex] = S * Math.Exp(N * binParams.DownValue);
-                for (int j = RHS.MinIndex + 1; j <= RHS.MaxIndex; j++)
-                {
-                    RHS[j] = RHS[j - 1] * Math.Exp(binParams.UpValue - binParams.DownValue);
-                }
-            }
-
-            Vector<double> Pay = opt.PayoffVector(RHS);
-
-            double pr = bn.getPrice(Pay);
-            Console.WriteLine("European {0}", pr);
-
-            // Binomial method with early exercise
-            BinomialMethod bnEarly = new BinomialMethod(discounting, binParams, N, opt.EarlyImpl);
-            bnEarly.modifyLattice(S);
-            Vector<double> RHS2 = new Vector<double>(bnEarly.BasePyramidVector());
-            Vector<double> Pay2 = opt.PayoffVector(RHS2);
-            double pr2 = bnEarly.getPrice(Pay2);
-            Console.WriteLine("American {0}", pr2);
-
-
-            // Display in Excel; first create array of asset mesh points
-            int startIndex = 0;
-            Vector<double> xarr = new Vector<double>(N + 1, startIndex);
-            xarr[xarr.MinIndex] = 0.0;
-            for (int j = xarr.MinIndex + 1; j <= xarr.MaxIndex; j++)
-            {
-                xarr[j] = xarr[j - 1] + k;
-            }
-
-            // Display lattice in Excel
-            //ExcelMechanisms exl = new ExcelMechanisms();
-
-            try
-            {
-                //public void printLatticeInExcel(Lattice<double> lattice, Vector<double> xarr, string SheetName)
-                string sheetName = "Lattice";
-
-                //convert lattice to DataSet
-
-                //exl.printLatticeInExcel(bnEarly.getLattice(), xarr, sheetName);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-        }
-
-        private Library.Binominal.Option GetTestOption()
-        {
-            return new Library.Binominal.Option
+            _testOption = new Library.Binominal.Option
             {
                 K = 100,
                 type = 2,
@@ -176,12 +29,72 @@ namespace CSharpForFinancialMarkets.Chapter9
             };
         }
 
-        private int numberOfSteps = 50;
+        [TestMethod]
+        public void C9_9_ExcelOutput()
+        {
+            var opt = _testOption;
+
+            var steps = 50;
+            var S = opt.K;
+
+            double k = opt.T / steps;
+
+            double discounting = Math.Exp(-opt.r * k);
+
+            var binParams = new CRRStrategy(opt.sig, opt.r, k); ; // Factory
+            var bn = new BinomialMethod(discounting, binParams, steps, opt.EarlyImpl);
+
+            bn.modifyLattice(opt.K);
+
+            // Phase III: Backward Induction and compute option price
+            Vector<double> RHS = new Vector<double>(bn.BasePyramidVector());
+            if (binParams.BinomialType == BinomialType.Additive)
+            {
+                RHS[RHS.MinIndex] = S * Math.Exp(steps * binParams.DownValue);
+                for (int j = RHS.MinIndex + 1; j <= RHS.MaxIndex; j++)
+                {
+                    RHS[j] = RHS[j - 1] * Math.Exp(binParams.UpValue - binParams.DownValue);
+                }
+            }
+
+            var pay = opt.PayoffVector(RHS);
+
+            var pr = bn.getPrice(pay);
+
+            // Display lattice in Excel
+            var file = Path.GetTempFileName();
+            file = Path.ChangeExtension(file, "xlsx");
+            ExcelMechanisms exl = new ExcelMechanisms(file);
+
+            try
+            {
+                // Display in Excel; first create array of asset mesh points
+                int startIndex = 0;
+                Vector<double> xarr = new Vector<double>(steps + 1, startIndex);
+                xarr[xarr.MinIndex] = 0.0;
+                for (int j = xarr.MinIndex + 1; j <= xarr.MaxIndex; j++)
+                {
+                    xarr[j] = xarr[j - 1] + k;
+                }
+
+                string sheetName = "Lattice";
+
+                exl.printLatticeInExcel(bn.getLattice(), xarr, sheetName);
+
+                exl.Save();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            Assert.AreEqual(pr, 3.0732, 0.01);
+        }
 
         [TestMethod]
         public void C9_9_4_European()
         {
-            var opt = GetTestOption();
+            var opt = _testOption;
 
             var k = opt.T / numberOfSteps;
             var discounting = Math.Exp(-opt.r * k);
@@ -212,7 +125,7 @@ namespace CSharpForFinancialMarkets.Chapter9
         [TestMethod]
         public void C9_9_4_EarlyExercise()
         {
-            var opt = GetTestOption();
+            var opt = _testOption;
 
             var steps = 50;
             var S = opt.K;
@@ -242,6 +155,189 @@ namespace CSharpForFinancialMarkets.Chapter9
             var pr = bn.getPrice(pay);
 
             Assert.AreEqual(pr, 3.0732, 0.01);
+        }
+
+        [TestMethod]
+        public void C9_9_6_TwoFactor_Spread_American()
+        {
+            // Declare and initialise the parameters
+            var myData = new TwoFactorBinomialParameters
+            {
+                sigma1 = 0.2,
+                sigma2 = 0.3,
+                T = 1.0,
+                r = 0.06,
+                K = 1.0,
+                div1 = 0.03,
+                div2 = 0.04,
+                rho = 0.5,
+                exercise = true
+            };
+
+            // Clewlow and Strickland p. 47 
+            // false;
+            var S1 = 100.0;
+            var S2 = 100.0;
+            var w1 = 1.0;
+            var w2 = -1.0;
+            var cp = 1;
+            myData.pay = new SpreadStrategy(cp, myData.K, w1, w2);
+
+            var myTree = new TwoFactorBinomial(myData, numberOfSteps, S1, S2);
+            var price = myTree.Price();
+
+            Assert.AreEqual(price, 10.15119, 0.001);
+        }
+
+        [TestMethod]
+        public void C9_9_6_TwoFactor_Spread_European()
+        {
+            // Declare and initialise the parameters
+            var myData = new TwoFactorBinomialParameters
+            {
+                sigma1 = 0.2,
+                sigma2 = 0.3,
+                T = 1.0,
+                r = 0.06,
+                K = 1.0,
+                div1 = 0.03,
+                div2 = 0.04,
+                rho = 0.5,
+                exercise = false
+            };
+
+            // Clewlow and Strickland p. 47 
+            // false;
+            var S1 = 100.0;
+            var S2 = 100.0;
+            var w1 = 1.0;
+            var w2 = -1.0;
+            var cp = 1;
+            myData.pay = new SpreadStrategy(cp, myData.K, w1, w2);
+
+            var myTree = new TwoFactorBinomial(myData, numberOfSteps, S1, S2);
+            var price = myTree.Price();
+
+            Assert.AreEqual(price, 10.13757, 0.001);
+        }
+
+        [TestMethod]
+        public void C9_9_6_TwoFactor_Basket_European()
+        {
+            double Price(double T, double sig1, double sig2)
+            {
+                var myData = new TwoFactorBinomialParameters
+                {
+                    sigma1 = sig1,
+                    sigma2 = sig2,
+                    T = T,
+                    r = 0.1,
+                    K = 40.0,
+                    div1 = 0.0,
+                    div2 = 0.0,
+                    rho = 0.5,
+                    exercise = false
+                };
+
+                var S1 = 18.0;
+                var S2 = 20.0;
+                var w1 = 1.0;
+                var w2 = 1.0;
+                var cp = -1; // Weights; put option
+                myData.pay = new BasketStrategy(myData.K, cp, w1, w2);
+
+                var myTree = new TwoFactorBinomial(myData, 500, S1, S2);
+                return myTree.Price();
+            }
+            
+            Assert.AreEqual(Price(0.95, 0.1, 0.1), 0.6032, 0.001);
+            Assert.AreEqual(Price(0.95, 0.1, 0.2), 1.2402, 0.001);
+            Assert.AreEqual(Price(0.95, 0.1, 0.3), 1.9266, 0.001);
+            Assert.AreEqual(Price(0.95, 0.2, 0.1), 1.1597, 0.001);
+            Assert.AreEqual(Price(0.95, 0.2, 0.2), 1.7749, 0.001);
+            Assert.AreEqual(Price(0.95, 0.2, 0.3), 2.4383, 0.001);
+            Assert.AreEqual(Price(0.95, 0.3, 0.1), 1.7639, 0.001);
+            Assert.AreEqual(Price(0.95, 0.3, 0.2), 2.355, 0.001);
+            Assert.AreEqual(Price(0.95, 0.3, 0.3), 2.9976, 0.001);
+
+            Assert.AreEqual(Price(0.05, 0.1, 0.1), 1.8025, 0.001);
+            Assert.AreEqual(Price(0.05, 0.1, 0.2), 1.8332, 0.001);
+            Assert.AreEqual(Price(0.05, 0.1, 0.3), 1.9117, 0.001);
+            Assert.AreEqual(Price(0.05, 0.2, 0.1), 1.8270, 0.001);
+            Assert.AreEqual(Price(0.05, 0.2, 0.2), 1.8859, 0.001);
+            Assert.AreEqual(Price(0.05, 0.2, 0.3), 1.9817, 0.001);
+            Assert.AreEqual(Price(0.05, 0.3, 0.1), 1.8906, 0.001);
+            Assert.AreEqual(Price(0.05, 0.3, 0.2), 1.9682, 0.001);
+            Assert.AreEqual(Price(0.05, 0.3, 0.3), 2.0737, 0.001);
+        }
+
+        [TestMethod]
+        public void C9_9_7_PadeApproximation()
+        {
+            var opt = new Library.Binominal.Option
+            {
+                K = 65,
+                type = 1,
+                T = 0.25,
+                r = 0.08,
+                sig = 0.3
+            };
+
+            double PriceWithJR(int numSteps, int type)
+            {
+                opt.type = type;
+
+                var steps = numSteps;
+                var S = 60;
+                double k = opt.T / steps;
+
+                double discounting = Math.Exp(-opt.r * k);
+
+                var binParams = new PadeJRStrategy(opt.sig, opt.r, k); // Factory
+                var bn = new BinomialMethod(discounting, binParams, steps);
+
+                bn.modifyLattice(S);
+
+                // Phase III: Backward Induction and compute option price
+                var RHS = new Vector<double>(bn.BasePyramidVector());
+
+                var pay = opt.PayoffVector(RHS);
+
+                return bn.getPrice(pay);
+            }
+
+            double PriceWithCRR(int numSteps, int type)
+            {
+                opt.type = type;
+
+                var steps = numSteps;
+                var S = 60;
+                double k = opt.T / steps;
+
+                double discounting = Math.Exp(-opt.r * k);
+
+                var binParams = new PadeCRRStrategy(opt.sig, opt.r, k); // Factory
+                var bn = new BinomialMethod(discounting, binParams, steps);
+
+                bn.modifyLattice(S);
+
+                // Phase III: Backward Induction and compute option price
+                var RHS = new Vector<double>(bn.BasePyramidVector());
+
+                var pay = opt.PayoffVector(RHS);
+
+                return bn.getPrice(pay);
+            }
+
+            Assert.AreEqual(PriceWithCRR(100, 1), 2.1399, 0.01);
+            Assert.AreEqual(PriceWithCRR(100, 2), 5.8527, 0.01);
+            Assert.AreEqual(PriceWithCRR(200, 1), 2.1365, 0.01);
+            Assert.AreEqual(PriceWithCRR(200, 2), 5.8494, 0.01);
+
+            Assert.AreEqual(PriceWithJR(100, 1), 2.1386, 0.01);
+            Assert.AreEqual(PriceWithJR(100, 2), 5.8516, 0.01);
+            Assert.AreEqual(PriceWithJR(200, 1), 2.1344, 0.01);
+            Assert.AreEqual(PriceWithJR(200, 2), 5.8473, 0.01);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Library.Binominal
 {
-    public class BinomialLatticeStrategy
+    public abstract class BinomialLatticeStrategy
     {
         public BinomialType BinomialType { get; set; }
 
@@ -11,7 +11,7 @@
         protected double s;
         protected double u;
 
-        public BinomialLatticeStrategy(double vol, double interest, double delta)
+        protected BinomialLatticeStrategy(double vol, double interest, double delta)
         {
             s = vol;
             r = interest;

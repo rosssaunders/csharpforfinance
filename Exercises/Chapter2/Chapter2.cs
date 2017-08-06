@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using static System.Math;
 using CSharpForFinancialMarkets;
+using Library;
 
 namespace CSharpForFinancialMarkets.Chapter2
 {

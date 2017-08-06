@@ -1,4 +1,5 @@
-﻿using static System.Math;
+﻿using Library;
+using static System.Math;
 
 namespace CSharpForFinancialMarkets
 {

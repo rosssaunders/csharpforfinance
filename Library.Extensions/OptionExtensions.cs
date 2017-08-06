@@ -19,7 +19,8 @@ namespace Library.Extensions
         }
 
         public static double[] Price(this Option option, double low, double upper, int NSteps)
-        { // Compute option price for a range of stock prices
+        { 
+            // Compute option price for a range of stock prices
 
             double h = (upper - low) / NSteps;
 

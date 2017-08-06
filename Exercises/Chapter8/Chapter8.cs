@@ -222,7 +222,7 @@ namespace CSharpForFinancialMarkets
         {
             var basePath = Path.Combine(Path.GetTempPath());
 
-            DirectoryInfo di = new DirectoryInfo(basePath);
+            var di = new DirectoryInfo(basePath);
 
             long size = 0;
             long count = 0;
@@ -255,8 +255,11 @@ namespace CSharpForFinancialMarkets
 
             BondModel vasicek = new CIRModel(kappa, theta, vol, r);
 
-            XmlSerializer xs2 = new XmlSerializer(typeof(BondModel),
-                                new Type[] { typeof(VasicekModel), typeof(CIRModel) });
+            var xs2 = new XmlSerializer(typeof(BondModel),
+                                new[]
+                                {
+                                    typeof(VasicekModel), typeof(CIRModel)
+                                });
 
             var persistedBondDefinition = Path.Combine(Path.GetTempPath(), "Bond.xml");
             using (Stream s = File.Create(persistedBondDefinition))

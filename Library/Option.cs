@@ -1,8 +1,8 @@
-﻿using System.Runtime.CompilerServices;
-using static System.Math;
-using static CSharpForFinancialMarkets.SpecialFunctions;
+﻿using System;
+using System.Runtime.CompilerServices;
+using CSharpForFinancialMarkets;
 
-namespace CSharpForFinancialMarkets
+namespace Library
 {
 
     public class Option
@@ -132,8 +132,8 @@ namespace CSharpForFinancialMarkets
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected (double d1, double d2, double tmp) D(double U)
         {
-            var tmp = sig * Sqrt(T);
-            var d1 = (Log(U / K) + (b + (sig * sig) * 0.5) * T) / tmp;
+            var tmp = sig * Math.Sqrt(T);
+            var d1 = (Math.Log(U / K) + (b + (sig * sig) * 0.5) * T) / tmp;
             var d2 = d1 - tmp;
 
             return (d1, d2, tmp);
@@ -144,32 +144,32 @@ namespace CSharpForFinancialMarkets
         {
             var (d1, d2, tmp) = D(U);
 
-            return (U * Exp((b - r) * T) * N(d1)) - (K * Exp(-r * T) * N(d2));
+            return (U * Math.Exp((b - r) * T) * SpecialFunctions.N(d1)) - (K * Math.Exp(-r * T) * SpecialFunctions.N(d2));
         }
 
         protected virtual double PutPrice(double U)
         {
             var (d1, d2, tmp) = D(U);
 
-            return (K * Exp(-r * T) * N(-d2)) - (U * Exp((b - r) * T) * N(-d1));
+            return (K * Math.Exp(-r * T) * SpecialFunctions.N(-d2)) - (U * Math.Exp((b - r) * T) * SpecialFunctions.N(-d1));
         }
 
         private double CallDelta(double U)
         {
             var (d1, d2, tmp) = D(U);
-            return Exp((b - r) * T) * N(d1);
+            return Math.Exp((b - r) * T) * SpecialFunctions.N(d1);
         }
 
         private double PutDelta(double U)
         {
             var (d1, d2, tmp) = D(U);
-            return Exp((b - r) * T) * (N(d1) - 1.0);
+            return Math.Exp((b - r) * T) * (SpecialFunctions.N(d1) - 1.0);
         }
 
         private double CallGamma(double U)
         {
             var (d1, d2, tmp) = D(U);
-            return N(d1) * Exp((b - r) * T) / (U * tmp);
+            return SpecialFunctions.N(d1) * Math.Exp((b - r) * T) / (U * tmp);
         }
 
         private double PutGamma(double U)
@@ -180,7 +180,7 @@ namespace CSharpForFinancialMarkets
         private double CallVega(double U)
         {
             var (d1, d2, tmp) = D(U);
-            return (U * Exp((b - r) * T) * n(d1) * Sqrt(T));
+            return (U * Math.Exp((b - r) * T) * SpecialFunctions.n(d1) * Math.Sqrt(T));
         }
 
         private double PutVega(double U)
@@ -193,7 +193,7 @@ namespace CSharpForFinancialMarkets
             var (d1, d2, tmp) = D(U);
 
             if (b != 0.0)
-                return T * K * Exp(-r * T) * N(d2);
+                return T * K * Math.Exp(-r * T) * SpecialFunctions.N(d2);
             else
                 return -T * CallPrice(U);
         }
@@ -203,7 +203,7 @@ namespace CSharpForFinancialMarkets
             var (d1, d2, tmp) = D(U);
 
             if (b != 0.0)
-                return -T * K * Exp(-r * T) * N(-d2);
+                return -T * K * Math.Exp(-r * T) * SpecialFunctions.N(-d2);
             else
                 return -T * PutPrice(U);
         }
@@ -212,9 +212,9 @@ namespace CSharpForFinancialMarkets
         {
             var (d1, d2, tmp) = D(U);
 
-            var t1 = (U * Exp((b - r) * T) * n(d1) * sig * 0.5) / Sqrt(T); // AG: here SpecialFunctions.n vs SpecialFunctions.N
-            var t2 = (b - r) * (U * Exp((b - r) * T) * N(d1));
-            var t3 = r * K * Exp(-r * T) * N(d2);
+            var t1 = (U * Math.Exp((b - r) * T) * SpecialFunctions.n(d1) * sig * 0.5) / Math.Sqrt(T); // AG: here SpecialFunctions.n vs SpecialFunctions.N
+            var t2 = (b - r) * (U * Math.Exp((b - r) * T) * SpecialFunctions.N(d1));
+            var t3 = r * K * Math.Exp(-r * T) * SpecialFunctions.N(d2);
 
             return -(t1 + t2 + t3);
         }
@@ -223,9 +223,9 @@ namespace CSharpForFinancialMarkets
         {
             var (d1, d2, tmp) = D(U);
 
-            var t1 = (U * Exp((b - r) * T) * n(d1) * sig * 0.5) / Sqrt(T); // AG: here SpecialFunctions.n vs SpecialFunctions.N
-            var t2 = (b - r) * (U * Exp((b - r) * T) * N(-d1));
-            var t3 = r * K * Exp(-r * T) * N(-d2);
+            var t1 = (U * Math.Exp((b - r) * T) * SpecialFunctions.n(d1) * sig * 0.5) / Math.Sqrt(T); // AG: here SpecialFunctions.n vs SpecialFunctions.N
+            var t2 = (b - r) * (U * Math.Exp((b - r) * T) * SpecialFunctions.N(-d1));
+            var t3 = r * K * Math.Exp(-r * T) * SpecialFunctions.N(-d2);
 
             return t2 + t3 - t1;
         }
@@ -234,14 +234,14 @@ namespace CSharpForFinancialMarkets
         {
             var (d1, d2, tmp) = D(U);
 
-            return T * U * Exp((b - r) * T) * N(d1);
+            return T * U * Math.Exp((b - r) * T) * SpecialFunctions.N(d1);
         }
 
         private double PutCoc(double U)
         {
             var (d1, d2, tmp) = D(U);
 
-            return -T * U * Exp((b - r) * T) * N(-d1);
+            return -T * U * Math.Exp((b - r) * T) * SpecialFunctions.N(-d1);
         }
 
         private double CallElasticity(double percentageMovement, double U)
@@ -267,9 +267,9 @@ namespace CSharpForFinancialMarkets
             var (d1, d2, tmp) = D(U);
 
             //From Haug - Complete guide to Option Pricing formulas
-            var x = -Exp((b - r) * T);
-            var y = n(d1) * ((b / (sig * Sqrt(T))) - (d2 / (2 * T)));
-            var z = (b - r) * N(d1);
+            var x = -Math.Exp((b - r) * T);
+            var y = SpecialFunctions.n(d1) * ((b / (sig * Math.Sqrt(T))) - (d2 / (2 * T)));
+            var z = (b - r) * SpecialFunctions.N(d1);
             
             var charm = x * (y + z);
             
@@ -281,9 +281,9 @@ namespace CSharpForFinancialMarkets
             var (d1, d2, tmp) = D(U);
 
             //From Haug - Complete guide to Option Pricing formulas
-            var x = -Exp((b - r) * T);
-            var y = n(d1) * ((b / (sig * Sqrt(T))) - (d2 / (2 * T)));
-            var z = (b - r) * N(-d1);
+            var x = -Math.Exp((b - r) * T);
+            var y = SpecialFunctions.n(d1) * ((b / (sig * Math.Sqrt(T))) - (d2 / (2 * T)));
+            var z = (b - r) * SpecialFunctions.N(-d1);
 
             var charm = x * (y - z);
 

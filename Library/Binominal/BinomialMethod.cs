@@ -31,10 +31,8 @@ namespace Library.Binominal
             constraintExists = false;
         }
 
-        public BinomialMethod(double discounting, BinomialLatticeStrategy strategy, int N,
-            ConstraintMethod constraint)
+        public BinomialMethod(double discounting, BinomialLatticeStrategy strategy, int N, ConstraintMethod constraint)
         {
-
             disc = discounting;
             str = strategy;
             BuildLattice(N);
