@@ -10,113 +10,111 @@ namespace Library.Binominal
         // Simple model for GBM
 
         // Underlying data structure
-        private Lattice<double> lattice;            // Magic number == 2 means binomial
-        private BinomialLatticeStrategy str;        // Reference to an algorithm
-
+        private Lattice<double> _lattice;                           // Magic number == 2 means binomial
+        private readonly BinomialLatticeStrategy _strategy;         // Reference to an algorithm
 
         // The possibility to define constraints on top of the European 
         // option solution, e.g. early exercise, barriers
-        public delegate double ConstraintMethod(double Price, double S);
-        ConstraintMethod con;
-        bool constraintExists;
+        public delegate double ConstraintMethod(double price, double S);
 
-        private double disc;
+        private readonly ConstraintMethod _con;
+        private readonly bool _constraintExists;
+        private readonly double _disc;
 
         public BinomialMethod(double discounting, BinomialLatticeStrategy strategy, int N)
         {
+            _disc = discounting;
+            _strategy = strategy;
 
-            disc = discounting;
-            str = strategy;
             BuildLattice(N);
-            constraintExists = false;
+
+            _constraintExists = false;
         }
 
         public BinomialMethod(double discounting, BinomialLatticeStrategy strategy, int N, ConstraintMethod constraint)
         {
-            disc = discounting;
-            str = strategy;
+            _disc = discounting;
+            _strategy = strategy;
             BuildLattice(N);
 
-            con = new ConstraintMethod(constraint);
-            constraintExists = true;
+            _con = constraint;
+
+            _constraintExists = true;
         }
 
         private void BuildLattice(int N)
-        { // Build a binomial lattice
+        { 
+            // Build a binomial lattice
 
             double val = 0.0;
-            lattice = new Lattice<double>(N, 2, val);
+            _lattice = new Lattice<double>(N, 2, val);
         }
 
-        public void modifyLattice(double U)
+        public void ModifyLattice(double U)
         { // Forward induction; building the tree 
 
-            double down = str.DownValue;
-            double up = str.UpValue;
+            double down = _strategy.DownValue;
+            double up = _strategy.UpValue;
 
-            int si = lattice.MinIndex;
-            lattice[si, si] = U;
+            int si = _lattice.MinIndex;
+            _lattice[si, si] = U;
 
             // Loop from the min index to the end index
-            for (int n = lattice.MinIndex + 1; n <= lattice.MaxIndex; n++)
+            for (int n = _lattice.MinIndex + 1; n <= _lattice.MaxIndex; n++)
             {
-                for (int i = 0; i < lattice.NumberColumns(n) - 1; i++)
+                for (int i = 0; i < _lattice.NumberColumns(n) - 1; i++)
                 {
-                    lattice[n, i] = down * lattice[n - 1, i];
-                    lattice[n, i + 1] = up * lattice[n - 1, i];
+                    _lattice[n, i] = down * _lattice[n - 1, i];
+                    _lattice[n, i + 1] = up * _lattice[n - 1, i];
                 }
             }
 
             // Postcondition: we now have the complete lattice for the underlying asset
-
         }
 
-        public double getPrice(Vector<double> RHS)
+        public double GetPrice(Vector<double> RHS)
         { 
             // Backward induction; calculate the price based on discete payoff function at t = T
-            double pr = str.ProbValue;
+            double pr = _strategy.ProbValue;
 
             // Initialise the vector at the expiry date/MaxIndex
-            int ei = lattice.MaxIndex;
+            int ei = _lattice.MaxIndex;
 
 
             // Exception handling: sizes of RHS and base vector must be the same
-            for (int i = 0; i < lattice.NumberColumns(ei); i++)
+            for (int i = 0; i < _lattice.NumberColumns(ei); i++)
             {
-                lattice[ei, i] = RHS[i];
+                _lattice[ei, i] = RHS[i];
             }
 
             double S;   // Value at node [n,i] before it gets overwritten
             // Loop from the max index to the start (min) index
-            for (int n = lattice.MaxIndex - 1; n >= lattice.MinIndex; n--)
+            for (int n = _lattice.MaxIndex - 1; n >= _lattice.MinIndex; n--)
             {
-                for (int i = 0; i < lattice.NumberColumns(n); i++)
+                for (int i = 0; i < _lattice.NumberColumns(n); i++)
                 {
-                    S = lattice[n, i];
-                    lattice[n, i] = disc * (pr * lattice[n + 1, i + 1] + (1.0 - pr) * lattice[n + 1, i]);
+                    S = _lattice[n, i];
+                    _lattice[n, i] = _disc * (pr * _lattice[n + 1, i + 1] + (1.0 - pr) * _lattice[n + 1, i]);
 
                     // Now take early exercise into account
-                    if (constraintExists)
+                    if (_constraintExists)
                     {
-                        lattice[n, i] = con(lattice[n, i], S);
+                        _lattice[n, i] = _con(_lattice[n, i], S);
 
                     }
                 }
             }
 
-            int si = lattice.MinIndex;
-            return lattice[si, si];
+            int si = _lattice.MinIndex;
+            return _lattice[si, si];
         }
 
         public Vector<double> BasePyramidVector()
         {
-            return lattice.BasePyramidVector();
+            return _lattice.BasePyramidVector();
         }
 
         // Underlying lattice
-        public Lattice<double> getLattice()
-        {
-            return lattice;
-        }
+        public Lattice<double> GetLattice => this._lattice;
     }
 }

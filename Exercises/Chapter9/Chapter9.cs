@@ -44,7 +44,7 @@ namespace CSharpForFinancialMarkets.Chapter9
             var binParams = new CRRStrategy(opt.sig, opt.r, k); ; // Factory
             var bn = new BinomialMethod(discounting, binParams, steps, opt.EarlyImpl);
 
-            bn.modifyLattice(opt.K);
+            bn.ModifyLattice(opt.K);
 
             // Phase III: Backward Induction and compute option price
             Vector<double> RHS = new Vector<double>(bn.BasePyramidVector());
@@ -59,7 +59,7 @@ namespace CSharpForFinancialMarkets.Chapter9
 
             var pay = opt.PayoffVector(RHS);
 
-            var pr = bn.getPrice(pay);
+            var pr = bn.GetPrice(pay);
 
             // Display lattice in Excel
             var file = Path.GetTempFileName();
@@ -79,7 +79,7 @@ namespace CSharpForFinancialMarkets.Chapter9
 
                 string sheetName = "Lattice";
 
-                exl.printLatticeInExcel(bn.getLattice(), xarr, sheetName);
+                exl.printLatticeInExcel(bn.GetLattice, xarr, sheetName);
 
                 exl.Save();
             }
@@ -102,7 +102,7 @@ namespace CSharpForFinancialMarkets.Chapter9
             var binParams = new CRRStrategy(opt.sig, opt.r, k); ; // Factory
             var bn = new BinomialMethod(discounting, binParams, numberOfSteps);
 
-            bn.modifyLattice(opt.K);
+            bn.ModifyLattice(opt.K);
 
             // Phase III: Backward Induction and compute option price
             Vector<double> RHS = new Vector<double>(bn.BasePyramidVector());
@@ -117,7 +117,7 @@ namespace CSharpForFinancialMarkets.Chapter9
 
             var pay = opt.PayoffVector(RHS);
 
-            var pr = bn.getPrice(pay);
+            var pr = bn.GetPrice(pay);
 
             Assert.AreEqual(pr, 2.8307, 0.01);
         }
@@ -137,7 +137,7 @@ namespace CSharpForFinancialMarkets.Chapter9
             var binParams = new CRRStrategy(opt.sig, opt.r, k); ; // Factory
             var bn = new BinomialMethod(discounting, binParams, steps, opt.EarlyImpl);
 
-            bn.modifyLattice(opt.K);
+            bn.ModifyLattice(opt.K);
 
             // Phase III: Backward Induction and compute option price
             Vector<double> RHS = new Vector<double>(bn.BasePyramidVector());
@@ -152,7 +152,7 @@ namespace CSharpForFinancialMarkets.Chapter9
 
             var pay = opt.PayoffVector(RHS);
 
-            var pr = bn.getPrice(pay);
+            var pr = bn.GetPrice(pay);
 
             Assert.AreEqual(pr, 3.0732, 0.01);
         }
@@ -296,14 +296,14 @@ namespace CSharpForFinancialMarkets.Chapter9
                 var binParams = new PadeJRStrategy(opt.sig, opt.r, k); // Factory
                 var bn = new BinomialMethod(discounting, binParams, steps);
 
-                bn.modifyLattice(S);
+                bn.ModifyLattice(S);
 
                 // Phase III: Backward Induction and compute option price
                 var RHS = new Vector<double>(bn.BasePyramidVector());
 
                 var pay = opt.PayoffVector(RHS);
 
-                return bn.getPrice(pay);
+                return bn.GetPrice(pay);
             }
 
             double PriceWithCRR(int numSteps, int type)
@@ -319,14 +319,14 @@ namespace CSharpForFinancialMarkets.Chapter9
                 var binParams = new PadeCRRStrategy(opt.sig, opt.r, k); // Factory
                 var bn = new BinomialMethod(discounting, binParams, steps);
 
-                bn.modifyLattice(S);
+                bn.ModifyLattice(S);
 
                 // Phase III: Backward Induction and compute option price
                 var RHS = new Vector<double>(bn.BasePyramidVector());
 
                 var pay = opt.PayoffVector(RHS);
 
-                return bn.getPrice(pay);
+                return bn.GetPrice(pay);
             }
 
             Assert.AreEqual(PriceWithCRR(100, 1), 2.1399, 0.01);
@@ -338,6 +338,30 @@ namespace CSharpForFinancialMarkets.Chapter9
             Assert.AreEqual(PriceWithJR(100, 2), 5.8516, 0.01);
             Assert.AreEqual(PriceWithJR(200, 1), 2.1344, 0.01);
             Assert.AreEqual(PriceWithJR(200, 2), 5.8473, 0.01);
+        }
+
+        [TestMethod]
+        public void C9_9_9_2_TheLeisenReimerMethod()
+        {
+            var opt = _testOption;
+            var numberOfSteps = 99;
+
+            var k = opt.T / numberOfSteps;
+            var discounting = Math.Exp(-opt.r * k);
+
+            var S = opt.K;
+
+            var binParams = new LeisenReimerStrategy(numberOfSteps, S, opt.K, opt.T, opt.r, opt.sig);
+            var bn = new BinomialMethod(discounting, binParams, numberOfSteps);
+
+            bn.ModifyLattice(S);
+
+            // Phase III: Backward Induction and compute option price
+            var RHS = new Vector<double>(bn.BasePyramidVector());
+            var pay = opt.PayoffVector(RHS);
+            var pr = bn.GetPrice(pay);
+
+            Assert.AreEqual(pr, 2.8307, 0.01);
         }
     }
 }

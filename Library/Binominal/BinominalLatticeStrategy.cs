@@ -5,12 +5,14 @@
         public BinomialType BinomialType { get; set; }
 
         protected double d;
-        protected double k;
         protected double p;
-        protected double r;
-        protected double s;
         protected double u;
 
+        //Not used by all strategies. Shouldn't be here
+        protected double k;        
+        protected double r;
+        protected double s;
+        
         protected BinomialLatticeStrategy(double vol, double interest, double delta)
         {
             s = vol;

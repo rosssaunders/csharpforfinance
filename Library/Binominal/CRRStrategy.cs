@@ -1,4 +1,5 @@
 using System;
+using static System.Math;
 
 namespace Library.Binominal
 {
@@ -7,18 +8,11 @@ namespace Library.Binominal
         public CRRStrategy(double vol, double interest, double delta)
             : base(vol, interest, delta)
         {
-            /* double e = Math.Exp((r)*k);
-            double sr = Math.Sqrt(exp(vol*vol*k) - 1.0);
-            u = e * (1.0 + sr);
-            d = e * (1.0 - sr);*/
-
             var R1 = (r - 0.5 * s * s) * k;
-            var R2 = s * Math.Sqrt(k);
+            var R2 = s * Sqrt(k);
 
-            u = Math.Exp(R1 + R2);
-            d = Math.Exp(R1 - R2);
-
-            var discounting = Math.Exp(-r * k);
+            u = Exp(R1 + R2);
+            d = Exp(R1 - R2);
 
             p = 0.5;
         }
