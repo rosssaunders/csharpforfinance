@@ -1,8 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>    
-    <TargetFramework>netcoreapp1.1</TargetFramework>    
-    <RootNamespace>CSharpForFinancialMarkets</RootNamespace>
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>CSharpForFinancialMarkets</RootNamespace>    
+    <ApplicationIcon />    
+    <OutputType>Library</OutputType>    
+    <StartupObject />
   </PropertyGroup>
 
   <ItemGroup>

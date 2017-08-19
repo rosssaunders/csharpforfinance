@@ -10,7 +10,6 @@ namespace Library.Binominal
         // Simple model for GBM
 
         // Underlying data structure
-        private Lattice<double> _lattice;                           // Magic number == 2 means binomial
         private readonly BinomialLatticeStrategy _strategy;         // Reference to an algorithm
 
         // The possibility to define constraints on top of the European 
@@ -35,6 +34,7 @@ namespace Library.Binominal
         {
             _disc = discounting;
             _strategy = strategy;
+
             BuildLattice(N);
 
             _con = constraint;
@@ -45,27 +45,32 @@ namespace Library.Binominal
         private void BuildLattice(int N)
         { 
             // Build a binomial lattice
-
-            double val = 0.0;
-            _lattice = new Lattice<double>(N, 2, val);
+            const double val = 0.0;
+            GetOptionLattice = new Lattice<double>(N, 2, val);
+            GetAssetLattice = new Lattice<double>(N, 2, val);
         }
 
         public void ModifyLattice(double U)
-        { // Forward induction; building the tree 
+        { 
+            // Forward induction; building the tree 
+            var down = _strategy.DownValue;
+            var up = _strategy.UpValue;
 
-            double down = _strategy.DownValue;
-            double up = _strategy.UpValue;
+            var si = GetOptionLattice.MinIndex;
 
-            int si = _lattice.MinIndex;
-            _lattice[si, si] = U;
+            GetOptionLattice[si, si] = U;
+            GetAssetLattice[si, si] = U;
 
             // Loop from the min index to the end index
-            for (int n = _lattice.MinIndex + 1; n <= _lattice.MaxIndex; n++)
+            for (var n = GetOptionLattice.MinIndex + 1; n <= GetOptionLattice.MaxIndex; n++)
             {
-                for (int i = 0; i < _lattice.NumberColumns(n) - 1; i++)
+                for (var i = 0; i < GetOptionLattice.NumberColumns(n) - 1; i++)
                 {
-                    _lattice[n, i] = down * _lattice[n - 1, i];
-                    _lattice[n, i + 1] = up * _lattice[n - 1, i];
+                    GetOptionLattice[n, i] = down * GetOptionLattice[n - 1, i];
+                    GetOptionLattice[n, i + 1] = up * GetOptionLattice[n - 1, i];
+
+                    GetAssetLattice[n, i] = down * GetAssetLattice[n - 1, i];
+                    GetAssetLattice[n, i + 1] = up * GetAssetLattice[n - 1, i];
                 }
             }
 
@@ -75,46 +80,47 @@ namespace Library.Binominal
         public double GetPrice(Vector<double> RHS)
         { 
             // Backward induction; calculate the price based on discete payoff function at t = T
-            double pr = _strategy.ProbValue;
+            var pr = _strategy.ProbValue;
 
             // Initialise the vector at the expiry date/MaxIndex
-            int ei = _lattice.MaxIndex;
-
+            var ei = GetOptionLattice.MaxIndex;
 
             // Exception handling: sizes of RHS and base vector must be the same
-            for (int i = 0; i < _lattice.NumberColumns(ei); i++)
+            for (var i = 0; i < GetOptionLattice.NumberColumns(ei); i++)
             {
-                _lattice[ei, i] = RHS[i];
+                GetOptionLattice[ei, i] = RHS[i];
             }
 
             double S;   // Value at node [n,i] before it gets overwritten
+
             // Loop from the max index to the start (min) index
-            for (int n = _lattice.MaxIndex - 1; n >= _lattice.MinIndex; n--)
+            for (var n = GetOptionLattice.MaxIndex - 1; n >= GetOptionLattice.MinIndex; n--)
             {
-                for (int i = 0; i < _lattice.NumberColumns(n); i++)
+                for (var i = 0; i < GetOptionLattice.NumberColumns(n); i++)
                 {
-                    S = _lattice[n, i];
-                    _lattice[n, i] = _disc * (pr * _lattice[n + 1, i + 1] + (1.0 - pr) * _lattice[n + 1, i]);
+                    S = GetOptionLattice[n, i];
+                    GetOptionLattice[n, i] = _disc * (pr * GetOptionLattice[n + 1, i + 1] + (1.0 - pr) * GetOptionLattice[n + 1, i]);
 
                     // Now take early exercise into account
                     if (_constraintExists)
                     {
-                        _lattice[n, i] = _con(_lattice[n, i], S);
-
+                        GetOptionLattice[n, i] = _con(GetOptionLattice[n, i], S);
                     }
                 }
             }
 
-            int si = _lattice.MinIndex;
-            return _lattice[si, si];
+            var si = GetOptionLattice.MinIndex;
+            return GetOptionLattice[si, si];
         }
 
         public Vector<double> BasePyramidVector()
         {
-            return _lattice.BasePyramidVector();
+            return GetOptionLattice.BasePyramidVector();
         }
 
         // Underlying lattice
-        public Lattice<double> GetLattice => this._lattice;
+        public Lattice<double> GetOptionLattice { get; private set; }
+
+        public Lattice<double> GetAssetLattice { get; private set; }
     }
 }

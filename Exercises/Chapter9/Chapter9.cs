@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Text;
 using Library.Binominal;
@@ -79,7 +78,7 @@ namespace CSharpForFinancialMarkets.Chapter9
 
                 string sheetName = "Lattice";
 
-                exl.printLatticeInExcel(bn.GetLattice, xarr, sheetName);
+                exl.printLatticeInExcel(bn.GetOptionLattice, xarr, sheetName);
 
                 exl.Save();
             }
